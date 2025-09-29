@@ -3,7 +3,7 @@
 Painel admin **estático** com tema claro/escuro, sidebar colapsável e páginas:
 **Dashboard, Notificações, Clientes (CRUD localStorage), Vendas (gráficos Canvas), Configurações**.
 
-https://github.com/<seu-usuario>/admin-base  
+https://github.com/<Santosst00>/admin-base  
 *(publique pelo GitHub Pages e vire referência no seu portfólio 👀)*
 
 ## ✨ Features
