@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Base • Sidebar + Páginas</title>
+
+  <!-- Google Fonts: Poppins + Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Top nav (mobile) -->
+  <nav class="site-nav">
+    <button class="sidebar-toggle" aria-label="Alternar menu">
+      <span class="material-symbols-rounded">menu</span>
+    </button>
+  </nav>
+
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar collapsed">
+      <div class="sidebar-header">
+        <div class="header-brand">
+          <img class="header-logo" src="https://picsum.photos/seed/gnosco/92" alt="Logo" />
+          <span class="header-title">Painel Admin</span>
+        </div>
+        <button class="sidebar-toggle" title="Recolher/Expandir">
+          <span class="material-symbols-rounded">chevron_left</span>
+        </button>
+      </div>
+
+      <div class="sidebar-content">
+        <form class="search-form" action="javascript:void(0)">
+          <span class="material-symbols-rounded">search</span>
+          <input type="search" placeholder="Buscar..." />
+        </form>
+
+        <ul class="menu-list">
+          <li><a class="menu-link active" data-route="dashboard" href="#dashboard"><span class="material-symbols-rounded">space_dashboard</span><span class="menu-label">Dashboard</span></a></li>
+          <li><a class="menu-link" data-route="notifs" href="#notifs"><span class="material-symbols-rounded">notifications</span><span class="menu-label">Notificações</span></a></li>
+          <li><a class="menu-link" data-route="clients" href="#clients"><span class="material-symbols-rounded">group</span><span class="menu-label">Clientes</span></a></li>
+          <li><a class="menu-link" data-route="sales" href="#sales"><span class="material-symbols-rounded">receipt_long</span><span class="menu-label">Vendas</span></a></li>
+          <li><a class="menu-link" data-route="settings" href="#settings"><span class="material-symbols-rounded">settings</span><span class="menu-label">Configurações</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle" type="button">
+          <span class="material-symbols-rounded theme-icon">dark_mode</span>
+          <span class="theme-label">Tema</span>
+          <div class="theme-toggle-track"><div class="theme-toggle-indicator"></div></div>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <h1 class="page-title" id="page-title">Dashboard</h1>
+      <div id="app" class="page-root"></div>
+    </main>
+  </div>
+
+  <!-- Templates (páginas) -->
+  <template id="tpl-dashboard">
+    <section>
+      <div class="kpi-grid">
+        <div class="kpi card"><span class="material-symbols-rounded icon">trending_up</span><div><div class="value" data-kpi="revenue">R$ 0</div><div class="sub">Receita (30d)</div></div></div>
+        <div class="kpi card"><span class="material-symbols-rounded icon">group_add</span><div><div class="value" data-kpi="newClients">0</div><div class="sub">Novos clientes</div></div></div>
+        <div class="kpi card"><span class="material-symbols-rounded icon">shopping_cart</span><div><div class="value" data-kpi="orders">0</div><div class="sub">Pedidos</div></div></div>
+        <div class="kpi card"><span class="material-symbols-rounded icon">star</span><div><div class="value" data-kpi="nps">0</div><div class="sub">NPS</div></div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="toolbar">
+            <h3>Vendas (últimos 12 meses)</h3>
+            <div class="badge"><span class="material-symbols-rounded">schedule</span>auto</div>
+          </div>
+          <canvas id="chartSales" height="260"></canvas>
+        </div>
+        <div class="card">
+          <div class="toolbar"><h3>Atividade recente</h3><button class="btn ghost" data-action="refresh-activity">Atualizar</button></div>
+          <ul id="activity" style="display:grid; gap:10px;"></ul>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-notifs">
+    <section>
+      <div class="toolbar">
+        <div class="tabs">
+          <button class="tab active" data-tab="all">Todas</button>
+          <button class="tab" data-tab="unread">Não lidas</button>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn ghost" data-action="mark-all-read">Marcar todas lidas</button>
+          <button class="btn" data-action="clear-notifs">Limpar</button>
+        </div>
+      </div>
+      <div id="notif-list" style="display:grid; gap:10px;"></div>
+    </section>
+  </template>
+
+  <template id="tpl-clients">
+    <section>
+      <div class="toolbar">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input class="input" id="client-search" placeholder="Buscar cliente..." />
+          <select class="select" id="client-segment">
+            <option value="">Segmento (todos)</option>
+            <option>Varejo</option>
+            <option>Serviços</option>
+            <option>Indústria</option>
+          </select>
+        </div>
+        <button class="btn" data-action="add-client"><span class="material-symbols-rounded" style="vertical-align:middle;">add</span> Novo</button>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th><th>Contato</th><th>Segmento</th><th>Status</th><th style="text-align:right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="client-tbody"></tbody>
+        </table>
+        <div class="toolbar" style="margin-top:12px;">
+          <span id="client-count">0 resultados</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn ghost" id="prev-page">Anterior</button>
+            <button class="btn ghost" id="next-page">Próxima</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-sales">
+    <section>
+      <div class="grid-2">
+        <div class="card">
+          <div class="toolbar"><h3>Receita por mês</h3></div>
+          <canvas id="chartRevenue" height="260"></canvas>
+        </div>
+        <div class="card">
+          <div class="toolbar"><h3>Top produtos</h3></div>
+          <ul id="top-products" style="display:grid; gap:10px;"></ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="toolbar"><h3>Pedidos recentes</h3><button class="btn ghost" data-action="gen-orders">Gerar lote</button></div>
+        <table>
+          <thead><tr><th>#</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Data</th></tr></thead>
+          <tbody id="orders-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-settings">
+    <section class="card">
+      <h3 style="margin-bottom:16px;">Preferências</h3>
+      <div class="field"><label>Nome do workspace</label><input class="input" value="Gnosco Admin" /></div>
+      <div class="field"><label>Idioma</label><select class="select"><option>Português (Brasil)</option><option>English</option></select></div>
+      <div class="field"><label>Moeda</label><select class="select"><option>BRL</option><option>USD</option><option>EUR</option></select></div>
+      <div style="display:flex; gap:10px; margin-top:16px;"><button class="btn">Salvar</button><button class="btn ghost">Descartar</button></div>
+    </section>
+  </template>
+
+  <!-- Modal Cliente -->
+  <dialog id="client-modal">
+    <form method="dialog">
+      <div class="modal-header">
+        <strong id="client-modal-title">Novo cliente</strong>
+        <button class="btn ghost" value="cancel">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <div class="field"><label>Nome</label><input class="input" id="f-name" required /></div>
+        <div class="field"><label>E-mail</label><input class="input" id="f-email" type="email" required /></div>
+        <div class="field"><label>Telefone</label><input class="input" id="f-phone" /></div>
+        <div class="field"><label>Segmento</label><select class="select" id="f-segment"><option>Varejo</option><option>Serviços</option><option>Indústria</option></select></div>
+        <div class="field"><label>Status</label><select class="select" id="f-status"><option>Ativo</option><option>Inativo</option><option>Em teste</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" value="cancel">Cancelar</button>
+        <button class="btn" id="client-save" value="default">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="./script.js"></script>
+</body>
+</html>
